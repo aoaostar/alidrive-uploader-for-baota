@@ -14,12 +14,11 @@ Install()
 	#依赖安装开始
 	echo '下载插件中'
   git clone https://github.com/aoaostar/aliyundrive_uploader_for_baota.git $install_path
-  cp $install_path/icon.png $panel_path/BTPanel/static/img/soft_ico/ico-aliyundrive_uploader.png
-  $panel_path/pyenv/bin/python $install_path/aliyundrive_uploader_migrate.py
-
 	echo '下载上传驱动中'
   git clone https://github.com/Hidove/aliyundrive-uploader.git $install_path/drive
   $panel_path/pyenv/bin/pip install -r $install_path/drive/requirements.txt
+  $panel_path/pyenv/bin/python $install_path/aliyundrive_uploader_migrate.py
+  cp $install_path/icon.png $panel_path/BTPanel/static/img/soft_ico/ico-aliyundrive_uploader.png
 	#依赖安装结束
 	#==================================================================
 

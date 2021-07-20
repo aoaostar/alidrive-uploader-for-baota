@@ -1,8 +1,8 @@
 import sqlite3
 
 plugin_path = "/www/server/panel/plugin/aliyundrive_uploader/"
-logs_dir = plugin_path + "/logs"
-db_file = plugin_path + "/drive/db.db"
+logs_dir = plugin_path + "logs"
+db_file = plugin_path + "drive/db.db"
 
 
 class aliyundrive_uploader_migrate():
