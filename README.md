@@ -16,6 +16,10 @@ yum install -y wget && wget -O install.sh https://raw.githubusercontent.com/aoao
 ```shell script
 wget -O install.sh https://raw.githubusercontent.com/aoaostar/aliyundrive_uploader_for_baota/master/install.sh && sh install.sh install
 ```
+## 更新
+```
+wget -O install.sh https://raw.githubusercontent.com/aoaostar/aliyundrive_uploader_for_baota/master/install.sh && sh install.sh update
+```
 ## 配置账号信息
 ![](https://z3.ax1x.com/2021/03/27/6zB8JA.png)
 

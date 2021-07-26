@@ -8,18 +8,18 @@ panel_path=/www/server/panel
 #安装
 Install()
 {
-  Uninstall
-  rm -rf $panel_path/BTPanel/static/img/soft_ico/ico-aliyundrive_uploader.png
+	Uninstall
+	rm -rf $panel_path/BTPanel/static/img/soft_ico/ico-aliyundrive_uploader.png
 	echo '正在安装阿里云盘上传工具...'
 	#==================================================================
 	#依赖安装开始
 	echo '下载插件中'
-  git clone https://github.com/aoaostar/aliyundrive_uploader_for_baota.git $install_path
+	git clone https://github.com/aoaostar/aliyundrive_uploader_for_baota.git $install_path
 	echo '下载上传驱动中'
-  git clone https://github.com/Hidove/aliyundrive-uploader.git $install_path/drive
-  $panel_path/pyenv/bin/pip install -r $install_path/drive/requirements.txt
-  $panel_path/pyenv/bin/python $install_path/aliyundrive_uploader_migrate.py
-  cp $install_path/icon.png $panel_path/BTPanel/static/img/soft_ico/ico-aliyundrive_uploader.png
+	git clone https://github.com/Hidove/aliyundrive-uploader.git $install_path/drive
+	$panel_path/pyenv/bin/pip install -r $install_path/drive/requirements.txt
+	$panel_path/pyenv/bin/python $install_path/aliyundrive_uploader_migrate.py
+	cp $install_path/icon.png $panel_path/BTPanel/static/img/soft_ico/ico-aliyundrive_uploader.png
 	#依赖安装结束
 	#==================================================================
 	echo '================================================'
@@ -28,21 +28,23 @@ Install()
 # 更新
 Update()
 {
-  rm -rf $install_path/temp/drive/config.json
-  cp $install_path/drive/config.json $install_path/temp/drive/config.json
-  Uninstall
+	rm -rf $install_path\_temp
+	mkdir -p $install_path\_temp/drive
+	cp $install_path/drive/config.json $install_path\_temp/drive/config.json
+	cp /www/server/panel/plugin/aliyundrive_uploader/drive/config.json /www/server/panel/plugin/aliyundrive_uploader\_temp/drive/config.json
+	Uninstall
 	echo '正在更新阿里云盘上传工具...'
 	#==================================================================
 	#依赖安装开始
 	echo '更新插件中'
-  git clone https://github.com/aoaostar/aliyundrive_uploader_for_baota.git $install_path
+	git clone https://github.com/aoaostar/aliyundrive_uploader_for_baota.git $install_path
 	echo '更新插件上传驱动中'
-  git clone https://github.com/Hidove/aliyundrive-uploader.git $install_path/drive
-  $panel_path/pyenv/bin/pip install -r $install_path/drive/requirements.txt
-  $panel_path/pyenv/bin/python $install_path/aliyundrive_uploader_migrate.py
-  cp $install_path/icon.png $panel_path/BTPanel/static/img/soft_ico/ico-aliyundrive_uploader.png
-  mv $install_path/temp/drive/config.json $install_path/drive/config.json
-  rm -rf $install_path/temp
+	git clone https://github.com/Hidove/aliyundrive-uploader.git $install_path/drive
+	$panel_path/pyenv/bin/pip install -r $install_path/drive/requirements.txt
+	$panel_path/pyenv/bin/python $install_path/aliyundrive_uploader_migrate.py
+	cp $install_path/icon.png $panel_path/BTPanel/static/img/soft_ico/ico-aliyundrive_uploader.png
+	mv $install_path\_temp/drive/config.json $install_path/drive/config.json
+	rm -rf $install_path\_temp
 	#依赖安装结束
 	#==================================================================
 	echo '================================================'
