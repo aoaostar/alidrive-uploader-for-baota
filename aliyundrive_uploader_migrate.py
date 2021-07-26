@@ -34,12 +34,15 @@ class aliyundrive_uploader_migrate():
 );""")
 
         cursor.execute('''create table IF NOT EXISTS task_log
-        (
-            id          INTEGER not null constraint task_log_pk primary key autoincrement,
-            task_id     INTEGER,
-            content     TEXT    default '' not null,
-            create_time INTEGER default 0 not null
-        );''')
+(
+    id          INTEGER not null
+        constraint task_log_pk
+            primary key autoincrement,
+    task_id     INTEGER,
+    log_level       TEXT    default 'info' not null,
+    content     TEXT    default '' not null,
+    create_time INTEGER default 0 not null
+);''')
 
     def migrate_aliyundrive(self):
         self.init_db()

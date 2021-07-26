@@ -229,6 +229,7 @@
                                 <button class="btn btn-default btn-sm" onclick="aliyundrive_uploader.clear_task('completed')">清除已上传任务</button>
                                 <button class="btn btn-default btn-sm" onclick="aliyundrive_uploader.clear_task('failure')">清除失败任务</button>
                                 <button class="btn btn-default btn-sm" onclick="aliyundrive_uploader.clear_task('log')">清除日志</button>
+                                <button class="btn btn-default btn-sm" onclick="aliyundrive_uploader.update()">更新插件</button>
                 `
 
                 let html = `<div class="soft-man-con bt-form">
@@ -325,6 +326,9 @@
 <div class="panel-group" id="aoaostar-panel-accordion" data-task-id='${list[0]['id']}'>
 ${html}
 </div><div class="aoaostar-page filePage pagination page pd15">${rdata.page}</div>`
+                if ($('#aoaostar-panel-accordion').html() == my_body) {
+                    return;
+                }
                 $('.plugin_body').html(my_body);
                 $('.aoaostar-panel-task-change').click(function (e) {
                     $('#aoaostar-panel-accordion').data('task-id', $(this).data('task-id'))
@@ -397,28 +401,33 @@ ${html}
 ${html}
 <div class="aoaostar-page filePage pagination page pd15">${rdata.page}</div>
 </div>`
+
+                if ($('#aoaostar-panel-accordion').html() == my_body) {
+                    return;
+                }
                 $('.plugin_body').html(my_body);
                 $('.aoaostar-panel-task-change').click(function (e) {
                     $('#aoaostar-panel-accordion').data('task-id', $(this).data('task-id'))
                 })
-                window.aoaostar_task_log = setInterval(() => {
-                    let task_id = $('#aoaostar-panel-accordion').data('task-id')
-                    request_plugin('aliyundrive_uploader', 'get_task_log', {
-                        'id': task_id,
-                    }, function (rdata) {
-                        if (rdata.status) {
-                            let content_list = rdata.data;
-                            let content = '';
-                            for (const contentListKey in content_list) {
-                                content += content_list[contentListKey]['content'] + '\n'
-                            }
-                            $('#aoaostar-exec_log-' + task_id).html(content)
-                        } else {
-                            $('#aoaostar-exec_log-' + task_id).html(rdata.msg)
+                let task_id = $('#aoaostar-panel-accordion').data('task-id')
+                request_plugin('aliyundrive_uploader', 'get_task_log', {
+                    'id': task_id,
+                }, function (rdata) {
+                    if (rdata.status) {
+                        let content_list = rdata.data;
+                        let content = '';
+                        for (const contentListKey in content_list) {
+                            content += content_list[contentListKey]['content'] + '\n'
                         }
-                        $('#aoaostar-exec_log-' + task_id).scrollTop($('#aoaostar-exec_log-' + task_id)[0].scrollHeight)
-                    })
-                }, 500)
+                        $('#aoaostar-exec_log-' + task_id).html(content)
+                    } else {
+                        $('#aoaostar-exec_log-' + task_id).html(rdata.msg)
+                    }
+                    $('#aoaostar-exec_log-' + task_id).scrollTop($('#aoaostar-exec_log-' + task_id)[0].scrollHeight)
+                })
+                window.aoaostar_task = setInterval(() => {
+                    aliyundrive_uploader.get_completed_tasks()
+                }, 2000)
             });
         },
         get_dir: function (p, path) {
@@ -502,7 +511,21 @@ ${html}
         //设置API
         get_api: function () {
             $.get('/plugin?action=a&s=get_config&name=aliyundrive_uploader', function (config) {
-                if (!config) return;
+                if (!config) {
+                    config = {
+                        "REFRESH_TOKEN": "refresh_token",
+                        "DRIVE_ID": "drive_id",
+                        "ROOT_PATH": "root",
+                        "FILE_PATH": "/www/wwwroot/default",
+                        "MULTITHREADING": false,
+                        "MAX_WORKERS": 5,
+                        "CHUNK_SIZE": 104857600,
+                        "RESUME": false,
+                        "OVERWRITE": false,
+                        "RETRY": 0,
+                        "RESIDENT": true
+                    }
+                }
                 var apicon = '<div class="bingfa mtb15">\
                             <p><span class="span_tit"> </span><a class="btn btn-success btm-xs" style="margin-left: 4px; margin-bottom: 10px" href="https://www.aliyundrive.com" target="_blank">注册账号</a></p>\
                             <p>\
@@ -578,6 +601,9 @@ ${html}
                 }
                 if (config.OVERWRITE) {
                     $('#OVERWRITE').attr("checked", true);
+                }
+                if (config.RESIDENT) {
+                    $('#RESIDENT').attr("checked", true);
                 }
 
                 $(".bt-cancel").click(function () {
@@ -663,7 +689,6 @@ ${html}
             })
         },
         clear_task: function (type) {
-            console.log(type)
             switch (type) {
                 case 'all':
                     typeName = '清除全部任务';
@@ -701,6 +726,23 @@ ${html}
                 })
             })
         },
+        update: function () {
+
+            bt.confirm({
+                msg: '确定要更新吗？',
+                title: '阿里云盘上传工具更新'
+            }, function () {
+                var loadT = layer.msg('正在更新中...', {icon: 16, time: 0, shade: [0.3, '#000']});
+                request_plugin('aliyundrive_uploader', 'update', {}, function (rdata) {
+                    layer.close(loadT);
+                    layer.msg(rdata.msg, {icon: rdata.status ? 1 : 2});
+                    if (rdata.status) {
+                        layer.close(i);
+                        window.location.reload()
+                    }
+                })
+            })
+        }
 
     }
 

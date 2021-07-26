@@ -216,8 +216,10 @@ class aliyundrive_uploader_main:
             public_exec_shell = self.__server_start()
             if self.__get_server_status():
                 return public.getJson(public.returnMsg(True, '阿里云盘上传服务启动成功'))
-            else:
+            elif public_exec_shell[1]:
                 return public.getJson(public.returnMsg(False, public_exec_shell[1]))
+            else:
+                return public.getJson(public.returnMsg(True, '阿里云盘上传服务启动成功'))
         elif args.type == 'stop':
             self.__server_stop()
             return public.getJson(public.returnMsg(True, '阿里云盘上传服务停止成功'))
@@ -226,8 +228,10 @@ class aliyundrive_uploader_main:
             public_exec_shell = self.__server_start()
             if self.__get_server_status():
                 return public.getJson(public.returnMsg(True, '阿里云盘上传服务重启成功'))
-            else:
+            elif public_exec_shell[1]:
                 return public.getJson(public.returnMsg(False, public_exec_shell[1]))
+            else:
+                return public.getJson(public.returnMsg(True, '阿里云盘上传服务重启成功'))
         else:
             return self.get_sever_status(args)
 
@@ -259,6 +263,10 @@ class aliyundrive_uploader_main:
                 return public.getJson(public.returnMsg(False, '阿里云盘日志清理失败：' + delete))
         else:
             return public.getJson(public.returnMsg(False, '请传入正确的type'))
+
+    def update(self,args):
+        public.ExecShell('wget -O ~/aliyundrive_uploader_for_baota.sh https://raw.githubusercontent.com/aoaostar/aliyundrive_uploader_for_baota/master/install.sh && sh ~/aliyundrive_uploader_for_baota.sh update')
+        return public.returnMsg(True, '更新成功!')
 
     def __get_server_status(self):
         if public.process_exists('python3', None, '%sdrive/main.py' % self.__plugin_path):
