@@ -5,10 +5,15 @@
 # +-------------------------------------------------------------------
 # | Author: Pluto <i@abcyun.cc>
 # +-------------------------------------------------------------------
+import shutil
 import sys, os, json
 
 # 设置运行目录
 import time
+import zipfile
+
+import requests
+
 from sqlite import sqlite
 
 os.chdir("/www/server/panel")
@@ -23,11 +28,27 @@ import aliyundrive_uploader_common as common
 if __name__ != '__main__':
     pass
 
+
 class aliyundrive_uploader_main:
     __plugin_path = "/www/server/panel/plugin/aliyundrive_uploader/"
     __config = None
     __data_path = __plugin_path + "/drive/db.db"
     __config_path = __plugin_path + "/drive/config.json"
+    __info_path = __plugin_path + "/info.json"
+    __default_config = {
+        "REFRESH_TOKEN": "refresh_token",
+        "DRIVE_ID": "drive_id",
+        "ROOT_PATH": "bt_upload",
+        "FILE_PATH": "/www/wwwroot/default",
+        "MULTITHREADING": False,
+        "MAX_WORKERS": 5,
+        "CHUNK_SIZE": 104857600,
+        "RESUME": False,
+        "OVERWRITE": False,
+        "RETRY": 0,
+        "RESIDENT": True,
+        "VERSIONS": '1.0'
+    }
 
     # 构造方法
     def __init__(self):
@@ -155,7 +176,7 @@ class aliyundrive_uploader_main:
             for k in data.keys():
                 if hasattr(get, k):
                     data[k] = getattr(get, k)
-                    if k in ['MULTITHREADING', 'OVERWRITE', 'RESUME','RESIDENT']:
+                    if k in ['MULTITHREADING', 'OVERWRITE', 'RESUME', 'RESIDENT']:
                         if data[k] in ['true', 1, True]:
                             data[k] = True
                         else:
@@ -264,9 +285,111 @@ class aliyundrive_uploader_main:
         else:
             return public.getJson(public.returnMsg(False, '请传入正确的type'))
 
-    def update(self,args):
-        public.ExecShell('wget -O ~/aliyundrive_uploader_for_baota.sh https://raw.githubusercontent.com/aoaostar/aliyundrive_uploader_for_baota/master/install.sh && sh ~/aliyundrive_uploader_for_baota.sh update')
+    def update(self, args):
+        download_url = {
+            'core': None,
+            'plugin': None,
+        }
+        tmp_path = '%s_tmp/' % self.__plugin_path.rstrip(os.sep)
+        if os.path.exists(tmp_path):
+            shutil.rmtree(tmp_path)
+        try:
+            # 备份配置文件
+            if not os.path.exists(tmp_path):
+                os.mkdir(tmp_path)
+            shutil.copy(self.__config_path, '%s/config.json' % tmp_path)
+
+            # 获取下载链接
+            requests_get = requests.get('https://api.github.com/repos/Hidove/aliyundrive-uploader/releases/latest')
+            if requests_get.status_code == 200:
+                requests_get_json = requests_get.json()
+                if requests_get_json.get('zipball_url'):
+                    download_url['core'] = requests_get_json.get('zipball_url')
+            else:
+                raise requests_get.raise_for_status()
+
+            requests_get = requests.get(
+                'https://api.github.com/repos/aoaostar/aliyundrive_uploader_for_baota/releases/latest')
+
+            if requests_get.status_code == 200:
+                requests_get_json = requests_get.json()
+                if requests_get_json.get('zipball_url'):
+                    download_url['plugin'] = requests_get_json.get('zipball_url')
+            else:
+                raise requests_get.raise_for_status()
+            # 下载包
+
+            if not os.path.exists('%s/tmp' % tmp_path):
+                os.mkdir('%s/tmp' % tmp_path)
+            if download_url['plugin']:
+                download_plugin = requests.get(download_url['plugin'])
+
+                if download_plugin.status_code == 200:
+                    public.writeFile('%s/plugin.zip' % tmp_path, download_plugin.content, 'wb+')
+                    self.__unzip_file('%s/plugin.zip' % tmp_path, '%s/tmp/plugin' % tmp_path)
+                    src_dir = '%s/tmp/plugin/%s' % (tmp_path, os.listdir('%s/tmp/plugin' % tmp_path)[0])
+                    self.__recursive_overwrite(src_dir, self.__plugin_path)
+                else:
+                    raise download_plugin.raise_for_status()
+
+            if download_url['core']:
+                download_core = requests.get(download_url['core'])
+                if download_core.status_code == 200:
+                    public.writeFile('%s/core.zip' % tmp_path, download_core.content, 'wb+')
+                    self.__unzip_file('%s/core.zip' % tmp_path, '%s/tmp/core' % tmp_path)
+                    src_dir = '%s/tmp/core/%s' % (tmp_path, os.listdir('%s/tmp/core' % tmp_path)[0])
+                    self.__recursive_overwrite(src_dir, '%s/drive' % self.__plugin_path)
+                else:
+                    raise download_core.raise_for_status()
+
+            # 恢复配置文件
+            example_config = public.readFile('%s/drive/example.config.json' % self.__plugin_path)
+            example_json = json.loads(example_config)
+            shutil.copy('%s/config.json' % tmp_path, self.__config_path)
+            self.__set_config('VERSIONS',example_json.get('VERSIONS'))
+            shutil.rmtree(tmp_path)
+
+        except Exception as e:
+            return public.returnMsg(False, '更新失败!' + str(e))
+
         return public.returnMsg(True, '更新成功!')
+
+    def check_update(self, args):
+        data = {
+            'current': {
+                'versions': self.__get_info('versions'),
+                'core_versions': self.__get_config('VERSIONS'),
+            },
+            'latest': {
+                'versions': self.__get_info('versions'),
+                'core_versions': self.__get_config('VERSIONS'),
+            },
+        }
+        requests_get = requests.get('https://api.github.com/repos/Hidove/aliyundrive-uploader/releases/latest')
+        if requests_get.status_code == 200:
+            requests_get_json = requests_get.json()
+            if requests_get_json.get('tag_name'):
+                data['latest']['core_versions'] = requests_get_json.get('tag_name')
+        requests_get = requests.get(
+            'https://api.github.com/repos/aoaostar/aliyundrive_uploader_for_baota/releases/latest')
+        if requests_get.status_code == 200:
+            requests_get_json = requests_get.json()
+            if requests_get_json.get('tag_name'):
+                data['latest']['versions'] = requests_get_json.get('tag_name')
+        if data['current']['versions'] != data['latest']['versions'] or data['current']['core_versions'] != \
+                data['latest']['core_versions']:
+            return {
+                'status': True,
+                'msg': '当前有更新<br/>插件当前版本为%s,最新版本为%s<br/>驱动当前版本为%s，最新版本为%s'
+                       % (data['current']['versions'], data['latest']['versions'], data['current']['core_versions'],
+                          data['latest']['core_versions']),
+                'data': data,
+            }
+        return {
+            'status': False,
+            'msg': '当前已是最新版',
+            'data': data,
+        }
 
     def __get_server_status(self):
         if public.process_exists('python3', None, '%sdrive/main.py' % self.__plugin_path):
@@ -312,21 +435,34 @@ class aliyundrive_uploader_main:
 
         return True
 
+    def __get_info(self, key=None):
+        # 判断是否从文件读取配置
+        if not os.path.exists(self.__info_path): return None
+        f_body = public.ReadFile(self.__info_path)
+        if not f_body: return None
+        config = json.loads(f_body)
+
+        # 取指定配置项
+        if key:
+            if key in config: return config[key]
+            return None
+        return config
+
     # 读取配置项(插件自身的配置文件)
     # @param key 取指定配置项，若不传则取所有配置[可选]
     # @param force 强制从文件重新读取配置项[可选]
     def __get_config(self, key=None, force=False):
         # 判断是否从文件读取配置
         if not self.__config or force:
-            if not os.path.exists(self.__config_path): return None
+            if not os.path.exists(self.__config_path): return self.__default_config
             f_body = public.ReadFile(self.__config_path)
-            if not f_body: return None
+            if not f_body: return self.__default_config
             self.__config = json.loads(f_body)
 
         # 取指定配置项
         if key:
             if key in self.__config: return self.__config[key]
-            return None
+            return self.__default_config[key]
         return self.__config
 
     # 设置配置项(插件自身的配置文件)
@@ -334,7 +470,7 @@ class aliyundrive_uploader_main:
     # @param value 配置值[可选]
     def __set_config(self, key=None, value=None):
         # 是否需要初始化配置项
-        if not self.__config: self.__config = {}
+        if not self.__config: self.__config = self.__get_config()
 
         # 是否需要设置配置值
         if key:
@@ -343,3 +479,24 @@ class aliyundrive_uploader_main:
         # 写入到配置文件
         public.WriteFile(self.__config_path, json.dumps(self.__config))
         return True
+
+    def __unzip_file(self, fz_name, path):
+        if not os.path.exists(path):
+            os.makedirs(path)
+        if zipfile.is_zipfile(fz_name):  # 检查是否为zip文件
+            with zipfile.ZipFile(fz_name, 'r') as zipf:
+                zipf.extractall(path)
+                return True
+
+        return False
+
+    def __recursive_overwrite(self, src, dist):
+        if os.path.isdir(src):
+            if not os.path.isdir(dist):
+                os.makedirs(dist)
+            files = os.listdir(src)
+            for f in files:
+                self.__recursive_overwrite(os.path.join(src, f),
+                                           os.path.join(dist, f))
+        else:
+            shutil.copyfile(src, dist)

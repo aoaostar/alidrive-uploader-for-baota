@@ -229,7 +229,7 @@
                                 <button class="btn btn-default btn-sm" onclick="aliyundrive_uploader.clear_task('completed')">清除已上传任务</button>
                                 <button class="btn btn-default btn-sm" onclick="aliyundrive_uploader.clear_task('failure')">清除失败任务</button>
                                 <button class="btn btn-default btn-sm" onclick="aliyundrive_uploader.clear_task('log')">清除日志</button>
-                                <button class="btn btn-default btn-sm" onclick="aliyundrive_uploader.update()">更新插件</button>
+                                <button class="btn btn-default btn-sm" onclick="aliyundrive_uploader.check_update()">检查更新</button>
                 `
 
                 let html = `<div class="soft-man-con bt-form">
@@ -635,7 +635,7 @@ ${html}
                     layer.close(i);
                     aliyundrive_uploader.get_dir()
                 }
-            })
+            }, true)
         },
         create_upload_task: function (filepath) {
             var data = {
@@ -649,7 +649,7 @@ ${html}
                     layer.close(i);
                     aliyundrive_uploader.get_dir()
                 }
-            })
+            }, true)
         },
         set_server_status: function (type) {
             var serverName = 'aliyundrive_uploader'
@@ -740,10 +740,33 @@ ${html}
                         layer.close(i);
                         window.location.reload()
                     }
-                })
+                }, true)
             })
+        },
+        check_update: function () {
+            var loadT = layer.msg('正在检查更新中...', {icon: 16, time: 0, shade: [0.3, '#000']});
+            request_plugin('aliyundrive_uploader', 'check_update', {}, function (rdata) {
+                layer.close(loadT);
+                if (rdata.status) {
+                    bt.confirm({
+                        msg: rdata.msg + '<br/>确定要更新吗？',
+                        title: '阿里云盘上传工具更新'
+                    }, function () {
+                        var load2 = layer.msg('正在更新中...', {icon: 16, time: 0, shade: [0.3, '#000']});
+                        request_plugin('aliyundrive_uploader', 'update', {}, function (rdata) {
+                            layer.close(load2);
+                            layer.msg(rdata.msg, {icon: rdata.status ? 1 : 2});
+                            if (rdata.status) {
+                                layer.close(i);
+                                window.location.reload()
+                            }
+                        }, true)
+                    })
+                } else {
+                    layer.msg(rdata.msg, {icon: 1});
+                }
+            }, true)
         }
-
     }
 
     aliyundrive_uploader.get_index();
@@ -820,14 +843,15 @@ ${html}
      * @param args           传到插件方法中的参数 请传入数组，示例：{p:1,rows:10,callback:"demo.get_logs"}
      * @param callback       请传入处理函数，响应内容将传入到第一个参数中
      */
-    function request_plugin(plugin_name, function_name, args, callback, timeout) {
+    function request_plugin(plugin_name, function_name, args, callback, is_async, timeout) {
         if (!timeout) timeout = 3600;
+        if (!is_async) is_async = false;
         $.ajax({
             type: 'POST',
             url: '/plugin?action=a&s=' + function_name + '&name=' + plugin_name,
             data: args,
             timeout: timeout,
-            async: false,
+            async: is_async,
             dataType: 'json',
             success: function (rdata) {
                 if (!callback) {

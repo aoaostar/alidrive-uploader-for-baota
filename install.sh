@@ -10,6 +10,7 @@ Install()
 {
 	Uninstall
 	rm -rf $panel_path/BTPanel/static/img/soft_ico/ico-aliyundrive_uploader.png
+	rm -rf $install_path/drive/config.json
 	echo '正在安装阿里云盘上传工具...'
 	#==================================================================
 	#依赖安装开始
@@ -20,6 +21,7 @@ Install()
 	$panel_path/pyenv/bin/pip install -r $install_path/drive/requirements.txt
 	$panel_path/pyenv/bin/python $install_path/aliyundrive_uploader_migrate.py
 	cp $install_path/icon.png $panel_path/BTPanel/static/img/soft_ico/ico-aliyundrive_uploader.png
+	cp $install_path/drive/example.config.json $install_path/drive/config.json
 	#依赖安装结束
 	#==================================================================
 	echo '================================================'
@@ -48,7 +50,7 @@ Update()
 	#依赖安装结束
 	#==================================================================
 	echo '================================================'
-	echo '阿里云盘上传工具安装完成'
+	echo '阿里云盘上传工具安装完成！请重启工具！'
 }
 
 #卸载
