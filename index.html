@@ -326,10 +326,12 @@
 <div class="panel-group" id="aoaostar-panel-accordion" data-task-id='${list[0]['id']}'>
 ${html}
 </div><div class="aoaostar-page filePage pagination page pd15">${rdata.page}</div>`
-                if ($('#aoaostar-panel-accordion').html() == my_body) {
+                if ($('#aoaostar-panel-accordion').html() == html) {
                     return;
                 }
-                $('.plugin_body').html(my_body);
+                if ($('#aoaostar-panel-accordion').data('task-id') !==list[0]['id']){
+                    $('.plugin_body').html(my_body);
+                }
                 $('.aoaostar-panel-task-change').click(function (e) {
                     $('#aoaostar-panel-accordion').data('task-id', $(this).data('task-id'))
                 })
@@ -402,10 +404,12 @@ ${html}
 <div class="aoaostar-page filePage pagination page pd15">${rdata.page}</div>
 </div>`
 
-                if ($('#aoaostar-panel-accordion').html() == my_body) {
+                if ($('#aoaostar-panel-accordion').html() == html) {
                     return;
                 }
-                $('.plugin_body').html(my_body);
+                if ($('#aoaostar-panel-accordion').data('task-id') !==list[0]['id']){
+                    $('.plugin_body').html(my_body);
+                }
                 $('.aoaostar-panel-task-change').click(function (e) {
                     $('#aoaostar-panel-accordion').data('task-id', $(this).data('task-id'))
                 })

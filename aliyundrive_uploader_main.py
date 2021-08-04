@@ -47,7 +47,7 @@ class aliyundrive_uploader_main:
         "OVERWRITE": False,
         "RETRY": 0,
         "RESIDENT": True,
-        "VERSIONS": '1.0'
+        "VERSIONS": '1.3'
     }
 
     # 构造方法
