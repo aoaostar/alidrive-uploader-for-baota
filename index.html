@@ -304,18 +304,19 @@
                     return;
                 }
                 let html = ''
-                for (const pKey in list) {
+    
+                for (let i = 0;i < list.length;i++){
                     html += `<div class="panel panel-default aoaostar-panel">
         <div class="panel-heading">
             <h5 class="panel-title">
-                <a class="aoaostar-panel-task-change" data-task-id='${list[pKey]['id']}' data-toggle="collapse" data-parent="#aoaostar-panel-accordion"
-                href="#collapse_${list[pKey]['id']}">【${status_text[list[pKey]['status']]}】${list[pKey]['filepath']}</a>
+                <a class="aoaostar-panel-task-change" data-task-id='${list[i]['id']}' data-toggle="collapse" data-parent="#aoaostar-panel-accordion"
+                href="#collapse_${list[i]['id']}">【${status_text[list[i]['status']]}】${list[i]['filepath']}</a>
             </h5>
         </div>
-        <div id="collapse_${list[pKey]['id']}" class="panel-collapse collapse ${pKey == 0 ? 'in' : ''}">
+        <div id="collapse_${list[i]['id']}" class="panel-collapse collapse ${i == 0 ? 'in' : ''}">
             <div class="panel-body">
                 <div class="aoaostar-taskcon">
-                    <textarea readonly id="aoaostar-exec_log-${list[pKey]['id']}">正在获取执行日志</textarea>
+                    <textarea readonly id="aoaostar-exec_log-${list[i]['id']}">正在获取执行日志</textarea>
                 </div>
             </div>
         </div>
@@ -343,8 +344,8 @@ ${html}
                         if (rdata.status) {
                             let content_list = rdata.data;
                             let content = '';
-                            for (const contentListKey in content_list) {
-                                content += content_list[contentListKey]['content'] + '\n'
+                            for (let i = 0;i < content_list.length;i++){
+                                content += content_list[i]['content'] + '\n'
                             }
                             $('#aoaostar-exec_log-' + task_id).html(content)
                         } else {
@@ -380,18 +381,19 @@ ${html}
                     return;
                 }
                 let html = ''
-                for (const pKey in list) {
+    
+                for (let i = 0;i < list.length;i++){
                     html += `<div class="panel panel-default aoaostar-panel">
         <div class="panel-heading">
             <h5 class="panel-title">
-                <a class="aoaostar-panel-task-change" data-task-id='${list[pKey]['id']}' data-toggle="collapse" data-parent="#aoaostar-panel-accordion"
-                href="#collapse_${list[pKey]['id']}">【${status_text[list[pKey]['status']]}】${list[pKey]['filepath']}</a>
+                <a class="aoaostar-panel-task-change" data-task-id='${list[i]['id']}' data-toggle="collapse" data-parent="#aoaostar-panel-accordion"
+                href="#collapse_${list[i]['id']}">【${status_text[list[i]['status']]}】${list[i]['filepath']}</a>
             </h5>
         </div>
-        <div id="collapse_${list[pKey]['id']}" class="panel-collapse collapse ${pKey == 0 ? 'in' : ''}">
+        <div id="collapse_${list[i]['id']}" class="panel-collapse collapse ${i == 0 ? 'in' : ''}">
             <div class="panel-body">
                 <div class="aoaostar-taskcon">
-                    <textarea readonly id="aoaostar-exec_log-${list[pKey]['id']}">正在获取执行日志</textarea>
+                    <textarea readonly id="aoaostar-exec_log-${list[i]['id']}">正在获取执行日志</textarea>
                 </div>
             </div>
         </div>
@@ -420,8 +422,8 @@ ${html}
                     if (rdata.status) {
                         let content_list = rdata.data;
                         let content = '';
-                        for (const contentListKey in content_list) {
-                            content += content_list[contentListKey]['content'] + '\n'
+                        for (let i = 0;i < content_list.length;i++){
+                            content += content_list[i]['content'] + '\n'
                         }
                         $('#aoaostar-exec_log-' + task_id).html(content)
                     } else {
@@ -453,16 +455,15 @@ ${html}
                 $('.plugin_body').html($('#file_body').html());
                 $('#aoaostar-page').html(rdata.PAGE);
                 let path_list = rdata.PATH.split('/')
-                for (const pathKey in path_list) {
-                    let dir_name = path_list[pathKey];
-                    if (pathKey > 0 && dir_name === '') {
+                for(let i = 1; i < path_list.length; i++){
+                    let dir_name = path_list[i];
+                    if (i > 0 && dir_name === '') {
                         break;
                     }
-                    let path_list_tmp = path_list.slice(0, parseInt(pathKey) + 1)
+                    let path_list_tmp = path_list.slice(0, parseInt(i) + 1)
 
                     let path_name = path_list_tmp.join('/');
-                    dir_name = path_list[pathKey]
-                    if (pathKey == 0) {
+                    if (i == 0) {
                         path_name = '/'
                         dir_name = '根目录'
                     }
@@ -470,8 +471,8 @@ ${html}
                 }
 
                 $('#filepath').html(filepath);
-                for (const pathKey in rdata.DIR) {
-                    let file_attributes = rdata.DIR[pathKey].split(';');
+                for(let i = 1; i < rdata.DIR.length; i++){
+                    let file_attributes = rdata.DIR[i].split(';');
                     let filename = file_attributes[0];
                     let file_size = file_attributes[1];
                     let file_date = file_attributes[2];
@@ -484,8 +485,8 @@ ${html}
                         <td class="text-right"><a class="btlink" onclick="aliyundrive_uploader.create_upload_task('${path_name}')">上传</a></td>
                     </tr>`
                 }
-                for (const pathKey in rdata.FILES) {
-                    let file_attributes = rdata.FILES[pathKey].split(';');
+                for(let i = 1; i < rdata.FILES.length; i++){
+                    let file_attributes = rdata.FILES[i].split(';');
                     let filename = file_attributes[0];
                     let file_size = file_attributes[1];
                     let file_date = file_attributes[2];

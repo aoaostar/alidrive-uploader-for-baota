@@ -3,3 +3,4 @@ test.py
 public.py
 drive
 db.db
+__pycache__

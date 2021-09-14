@@ -2,7 +2,7 @@
   "title": "阿里云盘上传工具",
   "name": "aliyundrive_uploader",
   "ps": "阿里云盘上传工具",
-  "versions": "1.3",
+  "versions": "1.4",
   "checks": "/www/server/panel/plugin/aliyundrive_uploader",
   "author": "Pluto",
   "home": "https://blog.aoaostar.com"
