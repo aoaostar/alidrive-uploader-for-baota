@@ -398,7 +398,7 @@ ${html}
                 $('.plugin_body').html($('#file_body').html());
                 $('#aoaostar-page').html(rdata.PAGE);
                 let path_list = rdata.PATH.split('/')
-                for (let i = 1; i < path_list.length; i++) {
+                for (let i = 0; i < path_list.length; i++) {
                     let dir_name = path_list[i];
                     if (i > 0 && dir_name === '') {
                         break;
@@ -415,7 +415,7 @@ ${html}
                 }
 
                 $('#filepath').html(filepath);
-                for (let i = 1; i < rdata.DIR.length; i++) {
+                for (let i = 0; i < rdata.DIR.length; i++) {
                     let file_attributes = rdata.DIR[i].split(';');
                     let filename = file_attributes[0];
                     let file_size = file_attributes[1];
@@ -429,7 +429,7 @@ ${html}
                         <td class="text-right"><a class="btlink" onclick="aliyundrive_uploader.create_upload_task('${path_name}')">上传</a></td>
                     </tr>`
                 }
-                for (let i = 1; i < rdata.FILES.length; i++) {
+                for (let i = 0; i < rdata.FILES.length; i++) {
                     let file_attributes = rdata.FILES[i].split(';');
                     let filename = file_attributes[0];
                     let file_size = file_attributes[1];
