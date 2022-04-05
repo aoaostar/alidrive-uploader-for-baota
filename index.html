@@ -1,0 +1,273 @@
+<style>
+    .bt-w-con, .plugin_body {
+        height: 100%;
+    }
+
+
+    .show {
+        display: block;
+    }
+
+    .output {
+        white-space: pre;
+        background-color: #333;
+        color: #fff;
+        height: 100%;
+        width: 100%;
+        padding: 1rem;
+        overflow: auto;
+    }
+
+    .plugin_body {
+        overflow: auto;
+    }
+
+    .plugin_body > div {
+        display: none;
+        height: 99%;
+        width: 100%;
+    }
+
+    #p-config-content {
+        height: 85%;
+    }
+
+    #p-log-content {
+        height: 90%;
+    }
+
+    .head {
+        display: flex;
+        justify-content: flex-start;
+        margin-top: 0;
+    }
+
+    .head .place-input {
+
+        background-color: #f3f3f3;
+        border: 1px solid #ccc;
+    }
+
+    .head .place-input {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding-right: 18px;
+        cursor: pointer;
+        width: 60%;
+        overflow: auto;
+    }
+
+    .head .place-input li {
+        background: url(/static/img/ico/ico-ltr.png) no-repeat right center;
+        flex-shrink: 0;
+        padding: 1rem;
+        padding-right: 2rem;
+    }
+
+    .list-list td span {
+        line-height: 30px;
+    }
+
+    #p-index .status {
+        padding: 2rem 1rem;
+        font-size: 1.5rem;
+    }
+
+    .actions {
+        margin-bottom: 2rem;
+    }
+
+    .status-info {
+        display: flex;
+    }
+</style>
+<div class="bt-form">
+    <div class="bt-w-main">
+        <!--菜单部分-->
+        <div class="bt-w-menu">
+            <p class="bgw" onclick="alidrive.get_index()">概览</p>
+            <p onclick="alidrive.get_config()">配置</p>
+            <p onclick="alidrive.get_tasks()">任务列表</p>
+            <p onclick="alidrive_view_files.index()">查看文件</p>
+            <p onclick="alidrive.get_logs()">日志</p>
+        </div>
+        <!--内容部分-->
+        <div class="bt-w-con pd15">
+            <div class="plugin_body">
+                <div id="p-index" class="divtable">
+                    <div class="status-info">
+                        <div class="plugin-status">
+                            <p class="status ok">
+                                任务池状态：<span>运行</span>
+                                <span style="color: #20a53a; margin-left: 3px;"
+                                      class="glyphicon glyphicon glyphicon-play"></span>
+                            </p>
+                            <p class="status no">
+                                任务池状态：<span>停止</span>
+                                <span style="color: red; margin-left: 3px;"
+                                      class="glyphicon glyphicon-pause"></span></p>
+                        </div>
+                        <div class="core-status">
+                            <p class="status ok">
+                                Core 状态：<span>运行</span>
+                                <span style="color: #20a53a; margin-left: 3px;"
+                                      class="glyphicon glyphicon glyphicon-play"></span>
+                            </p>
+                            <p class="status no">
+                                Core 状态：<span>停止</span>
+                                <span style="color: red; margin-left: 3px;"
+                                      class="glyphicon glyphicon-pause"></span></p>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button  style="display: none" onclick="alidrive_server.start()"
+                                class="status-change btn btn-default btn-sm">
+                            启动
+                        </button>
+                        <button onclick="alidrive_server.stop()" class="status-change btn btn-default btn-sm">
+                            停止
+                        </button>
+                        <button onclick="alidrive_server.restart()" class="btn btn-default btn-sm">
+                            重启
+                        </button>
+                        <button onclick="alidrive.check_update()" class="btn btn-default btn-sm">
+                            检查更新
+                        </button>
+                        <button onclick="alidrive.update()" class="btn btn-default btn-sm">
+                            立即更新
+                        </button>
+                    </div>
+                    <table class="table table-hover table-bordered"
+                           style="background-color:#fafafa">
+                        <tbody id="p-index-content">
+                        </tbody>
+                    </table>
+                    <ul class="help-info-text c7">
+                        <li>任务池为监控上传任务的后台应用</li>
+                        <li>Core 状态在未上传时为停止状态，正在上传时才为运行状态</li>
+                    </ul>
+                </div>
+                <div id="p-config">
+                    <div contentEditable="true" class="output" id="p-config-content"></div>
+                    <button onclick="alidrive.save_config()" class="btn btn-success btn-sm" style="margin-top:10px;">保存
+                    </button>
+                    <ul class="help-info-text c7">
+                        <li>此处为yaml类型配置文件，请严格按照语法修改。</li>
+                    </ul>
+                </div>
+                <div id="p-log">
+                    <div contentEditable="true" class="output" id="p-log-content"></div>
+                    <button onclick="alidrive.clear_logs()" class="btn btn-success btn-sm" style="margin-top:10px;">清空日志
+                    </button>
+                </div>
+                <div id="p-task">
+                    <div class="divtable">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th width="20"><input id="p-task-checkAll" type="checkbox">
+                                </th>
+                                <th>ID</th>
+                                <th>文件路径</th>
+                            </tr>
+                            </thead>
+                            <tbody id="p-task-content">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mtb15" style="height:32px">
+                        <div class="pull-left buttongroup">
+                            <button id="p-task-delete" class="btn btn-default btn-sm rs-del">删除</button>
+                        </div>
+                        <div class="page">
+                            <div>
+                                <span id="p-task-count" class="Pcount">共0条</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="p-files">
+                    <div class="head pd15">
+                        <button
+                                class="btn btn-default btn-sm glyphicon glyphicon-arrow-left"
+                                title="后退" onclick="alidrive_view_files.back()"></button>
+                        <ul class="place-input" id="p-files-path">
+                            <li><a title="/" onclick="">根目录</a></li>
+                        </ul>
+                        <button class="btn btn-default btn-sm glyphicon glyphicon-refresh"
+                                title="刷新" onclick="alidrive_view_files.get_dir(alidrive_view_files.page)"></button>
+                    </div>
+                    <div class="main pd15">
+                        <div class="divtable" style="margin-bottom:15px">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th>名称</th>
+                                    <th>大小</th>
+                                    <th>更新时间</th>
+                                    <th class="text-right">操作</th>
+                                </tr>
+                                </thead>
+                                <tbody id="p-files-list" class="list-list">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="pd15 text-right">
+                        <div id="p-file-page" class="pagination page">
+                            <div><span class="Pcurrent">1</span><span class="Pnumber">1/1</span><span
+                                    class="Pline">从1-1条</span><span class="Pcount">共0条</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="/alidrive/static/js/app.js"></script>
+<script type="text/javascript">
+
+    //定义窗口尺寸
+    $('.layui-layer-page').css({'width': '900px'});
+
+    //左测菜单切换效果
+    $(".bt-w-menu p").click(function () {
+        $(this).addClass('bgw').siblings().removeClass('bgw')
+    });
+
+    $('#p-task-checkAll').click(function () {
+        $('#p-task-content input[type=checkbox]').prop("checked", $(this).prop("checked"));
+    })
+
+    $('#p-task-delete').click(function () {
+        let els = $('#p-task-content input[type=checkbox]:checked')
+        if (els.length <= 0) {
+
+            alidrive_message.error("请至少选择一个任务")
+            return
+        }
+        alidrive_message.loading('提交中');
+        let tasks = []
+        for (const el of els) {
+            tasks.push(alidrive.delete_task($(el).data('id')))
+        }
+        Promise.all(tasks)
+            .finally(() => {
+                alidrive_message.close()
+                alidrive_message.success("删除成功")
+                $('#p-task-checkAll').prop('checked', false)
+                alidrive.get_tasks()
+            })
+    })
+
+
+    function show(child) {
+        $('.plugin_body div').removeClass("show")
+        $('#' + child).addClass("show")
+    }
+
+    alidrive.get_index()
+
+
+</script>
