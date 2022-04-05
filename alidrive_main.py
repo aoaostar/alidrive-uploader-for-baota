@@ -60,10 +60,10 @@ class alidrive_main:
     def update(self, args):
         shell = public.ExecShell(
             f"chmod 755 {self.__plugin_path}install.sh && bash {self.__plugin_path}install.sh update")
-        if shell[1] != "":
-            return public.returnMsg(False, shell[1])
-        if shell[0] != "":
+
+        if not shell[0] == "":
             return public.returnMsg(True, shell[0])
+        return public.returnMsg(False, shell[1])
 
     def add_task(self, args):
         if "filepath" not in args:

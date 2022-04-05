@@ -20,8 +20,12 @@ var alidrive_message = {
         });
         return this.instance
     },
-    close: function () {
-        layer.close(this.instance)
+    close: function (instance) {
+        if (instance) {
+            layer.close(instance)
+        } else {
+            layer.close(this.instance)
+        }
     }
 }
 
@@ -97,24 +101,21 @@ var alidrive_view_files = {
 }
 var alidrive = {
     update: function () {
-        alidrive_message.loading('正在更新中');
-        try {
-            request_plugin("alidrive", 'update').then(res => {
-                if (res.status) {
-                    alidrive_message.success("更新成功")
-                } else {
-                    alidrive_message.error(res.msg)
-                }
-            })
-        } finally {
-            alidrive_message.close()
-        }
+        const loading = alidrive_message.loading('正在更新中');
+        request_plugin("alidrive", 'update', {}, 0).then(res => {
+            if (res.status) {
+                alidrive_message.success("更新成功")
+            } else {
+                alidrive_message.error(res.msg)
+            }
+        }).finally(() => {
+            alidrive_message.close(loading)
+        })
     },
     check_update: function (type = "check_update") {
-        alidrive_message.loading('正在检查更新中');
-        try {
-            request_plugin("alidrive", type).then(res => {
-                let tmp = `<tr>
+        const loading = alidrive_message.loading('正在检查更新中');
+        request_plugin("alidrive", type).then(res => {
+            let tmp = `<tr>
                             <th>插件版本</th>
                             <td>${res.version}</td>
                             <th>Core 版本</th>
@@ -132,11 +133,10 @@ var alidrive = {
                             <th>Github</th>
                             <td><a href="https://github.com/aoaostar" target="_blank">https://github.com/aoaostar</a></td>
                         </tr>`
-                $('#p-index-content').html(tmp)
-            })
-        } finally {
-            alidrive_message.close()
-        }
+            $('#p-index-content').html(tmp)
+        }).finally(() => {
+            alidrive_message.close(loading)
+        })
     },
     get_index: function () {
         show("p-index")
@@ -150,16 +150,14 @@ var alidrive = {
         })
     },
     save_config: function () {
-        alidrive_message.loading('提交中');
-        try {
-            request_plugin("alidrive", "save_config", {
-                data: $('#p-config-content').text()
-            }).then(res => {
-                layer.msg(res.msg, {icon: res.status ? 1 : 2});
-            })
-        } finally {
-            alidrive_message.close()
-        }
+        const loading = alidrive_message.loading('提交中');
+        request_plugin("alidrive", "save_config", {
+            data: $('#p-config-content').text()
+        }).then(res => {
+            layer.msg(res.msg, {icon: res.status ? 1 : 2});
+        }).finally(() => {
+            alidrive_message.close(loading)
+        })
     },
     get_tasks: function () {
         show('p-task')
@@ -177,30 +175,26 @@ var alidrive = {
                             </tr>`
             }
             $('#p-task-content').html(tmp)
-            $('#p-task-count').text(`共${res?.length}条`)
+            $('#p-task-count').text(`共${Object.keys(res).length}条`)
         })
     },
     add_task: function (filepath) {
-        alidrive_message.loading('提交中');
-        try {
-            request_plugin("alidrive", "add_task", {
-                filepath: filepath
-            }).then(res => {
-                layer.msg(res.msg, {icon: res.status ? 1 : 2});
-            })
-        } finally {
-            alidrive_message.close()
-        }
+        const loading = alidrive_message.loading('提交中');
+        request_plugin("alidrive", "add_task", {
+            filepath: filepath
+        }).then(res => {
+            layer.msg(res.msg, {icon: res.status ? 1 : 2});
+        }).finally(() => {
+            alidrive_message.close(loading)
+        })
     },
     delete_task: function (id) {
-        alidrive_message.loading('提交中');
-        try {
-            return request_plugin("alidrive", "delete_task", {
-                id: id
-            })
-        } finally {
-            alidrive_message.close()
-        }
+        const loading = alidrive_message.loading('提交中');
+        return request_plugin("alidrive", "delete_task", {
+            id: id
+        }).finally(() => {
+            alidrive_message.close(loading)
+        })
     },
     get_logs: function () {
         show("p-log")
@@ -220,113 +214,108 @@ var alidrive = {
 
 var alidrive_server = {
     status: function () {
-        alidrive_message.loading('正在获取系统状态');
-        try {
-            request_plugin("alidrive", "server_status").then(res => {
-                $('#p-index .status').hide()
-                let status_change = $('#p-index .status-change');
-                status_change.hide()
-                if (res.status) {
-                    $(status_change[1]).show()
-                    $('#p-index .plugin-status .status.ok').show()
-                } else {
-                    $(status_change[0]).show()
-                    $('#p-index .plugin-status .status.no').show()
-                }
-                if (res.core_status) {
-                    $('#p-index .core-status .status.ok').show()
-                } else {
-                    $('#p-index .core-status .status.no').show()
-                }
-            })
-        } finally {
-            alidrive_message.close()
-        }
+        const loading = alidrive_message.loading('正在获取系统状态');
+        request_plugin("alidrive", "server_status").then(res => {
+            $('#p-index .status').hide()
+            let status_change = $('#p-index .status-change');
+            status_change.hide()
+            if (res.status) {
+                $(status_change[1]).show()
+                $('#p-index .plugin-status .status.ok').show()
+            } else {
+                $(status_change[0]).show()
+                $('#p-index .plugin-status .status.no').show()
+            }
+            if (res.core_status) {
+                $('#p-index .core-status .status.ok').show()
+            } else {
+                $('#p-index .core-status .status.no').show()
+            }
+        }).finally(() => {
+            alidrive_message.close(loading)
+        })
     },
     start: function () {
-        alidrive_message.loading('正在发送启动命令');
-        try {
-            request_plugin("alidrive", "server_start").then(res => {
-                if (res.status) {
-                    alidrive_message.success("启动成功")
-                } else {
-                    alidrive_message.error(res.message)
-                }
-            })
-        } finally {
-            alidrive_message.close()
+        const loading = alidrive_message.loading('正在发送启动命令');
+        request_plugin("alidrive", "server_start").then(res => {
+            if (res.status) {
+                alidrive_message.success("启动成功")
+            } else {
+                alidrive_message.error(res.message)
+            }
+        }).finally(() => {
+            alidrive_message.close(loading)
             setTimeout(() => {
                 this.status()
             }, 2000)
-        }
+        })
     },
     stop: function () {
-        alidrive_message.loading('正在发送停止命令');
-        try {
-            request_plugin("alidrive", "server_stop").then(res => {
-                if (res.status) {
-                    alidrive_message.success("停止成功")
-                } else {
-                    alidrive_message.error(res.message)
-                }
-            })
-        } finally {
-            alidrive_message.close()
+        const loading = alidrive_message.loading('正在发送停止命令');
+        request_plugin("alidrive", "server_stop").then(res => {
+            if (res.status) {
+                alidrive_message.success("停止成功")
+            } else {
+                alidrive_message.error(res.message)
+            }
+        }).finally(() => {
+            alidrive_message.close(loading)
             setTimeout(() => {
                 this.status()
             }, 2000)
-        }
+        })
     },
     restart: function () {
-        alidrive_message.loading('正在发送重启命令');
-        try {
-            request_plugin("alidrive", "server_restart").then(res => {
-                if (res.status) {
-                    alidrive_message.success("重启成功")
-                } else {
-                    alidrive_message.error(res.message)
-                }
-            })
-        } finally {
-            alidrive_message.close()
+        const loading = alidrive_message.loading('正在发送重启命令');
+        request_plugin("alidrive", "server_restart").then(res => {
+            if (res.status) {
+                alidrive_message.success("重启成功")
+            } else {
+                alidrive_message.error(res.message)
+            }
+        }).finally(() => {
+            alidrive_message.close(loading)
             setTimeout(() => {
                 this.status()
             }, 2000)
-        }
+        })
     },
 }
 
 function request_plugin(plugin_name, function_name, args, timeout) {
-    if (!timeout) timeout = 3600 * 1000;
-
-    return $.ajax({
-        type: 'POST',
-        url: '/plugin?action=a&s=' + function_name + '&name=' + plugin_name,
-        data: args,
-        timeout: timeout,
-        success: function (rdata) {
-            return rdata
-        },
-        error: function (ex) {
-            alidrive_message.error("请求异常")
-        }
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: 'POST',
+            url: '/plugin?action=a&s=' + function_name + '&name=' + plugin_name,
+            data: args,
+            timeout: timeout,
+            success: function (rdata) {
+                resolve(rdata)
+            },
+            error: function (e) {
+                alidrive_message.error("请求异常" + e)
+                reject(e)
+            }
+        })
     })
 }
 
 function request_post(url, args, callback, timeout) {
     if (!timeout) timeout = 3600;
-
-    return $.ajax({
-        type: 'POST',
-        url: url,
-        data: args,
-        timeout: timeout,
-        dataType: 'json',
-        success: function (rdata) {
-            return rdata;
-        },
-        error: function (ex) {
-            alidrive_message.error("请求异常")
-        }
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: args,
+            timeout: timeout,
+            dataType: 'json',
+            success: function (rdata) {
+                resolve(rdata)
+            },
+            error: function (e) {
+                alidrive_message.error("请求异常" + e)
+                reject(e)
+            }
+        })
     })
 }

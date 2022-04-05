@@ -247,14 +247,14 @@
             alidrive_message.error("请至少选择一个任务")
             return
         }
-        alidrive_message.loading('提交中');
+        const loading = alidrive_message.loading('提交中');
         let tasks = []
         for (const el of els) {
             tasks.push(alidrive.delete_task($(el).data('id')))
         }
         Promise.all(tasks)
             .finally(() => {
-                alidrive_message.close()
+                alidrive_message.close(loading)
                 alidrive_message.success("删除成功")
                 $('#p-task-checkAll').prop('checked', false)
                 alidrive.get_tasks()

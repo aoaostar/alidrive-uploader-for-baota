@@ -57,7 +57,7 @@ Install()
 	echo '下载上传驱动中'
   CORE_DOWNLOAD_URL=$(curl -fsSL https://api.github.com/repos/aoaostar/alidrive-uploader/releases/latest | grep "browser_download_url.*$OS.*$ARCH" | cut -d '"' -f 4)
   curl -L "$CORE_DOWNLOAD_URL" | tar -xz
-  mv `ls | grep "alidrive-uploader" | grep -v "alidrive-uploader-for-baota"` $install_path/core
+  mv `ls | grep "alidrive_uploader"` $install_path/core
 	cp $install_path/icon.png $panel_path/BTPanel/static/img/soft_ico/ico-alidrive.png
 	cp $install_path/core/example.config.yaml $install_path/core/config.yaml
 	#依赖安装结束
@@ -68,9 +68,9 @@ Install()
 # 更新
 Update()
 {
-	rm -rf $install_path/_temp
-	mkdir -p $install_path/_temp/core
-	cp $install_path/core/config.yaml $install_path/_temp/core/config.yaml
+	rm -rf $install_path\_temp
+	mkdir -p $install_path\_temp/core
+	cp $install_path/core/config.yaml $install_path\_temp/core/config.yaml
 	Uninstall
 	echo '正在更新阿里云盘上传工具...'
 	#==================================================================
@@ -82,11 +82,11 @@ Update()
 	echo '更新插件上传驱动中'
   CORE_DOWNLOAD_URL=$(curl -fsSL https://api.github.com/repos/aoaostar/alidrive-uploader/releases/latest | grep "browser_download_url.*$OS.*$ARCH" | cut -d '"' -f 4)
   curl -L "$CORE_DOWNLOAD_URL" | tar -xz
-  mv `ls | grep "alidrive-uploader" | grep -v "alidrive-uploader-for-baota"` $install_path/core
+  mv `ls | grep "alidrive_uploader"` $install_path/core
   chmod 755 $install_path/core/alidrive
 	cp $install_path/icon.png $panel_path/BTPanel/static/img/soft_ico/ico-alidrive.png
-	mv $install_path/_temp/core/config.yaml $install_path/core/config.yaml
-	rm -rf $install_path/_temp
+	mv $install_path\_temp/core/config.yaml $install_path/core/config.yaml
+	rm -rf $install_path\_temp
 	#依赖安装结束
 	#==================================================================
 	echo '================================================'
