@@ -110,6 +110,9 @@ var alidrive = {
             }
         }).finally(() => {
             alidrive_message.close(loading)
+            setTimeout(() => {
+                this.check_update()
+            }, 2000)
         })
     },
     check_update: function (type = "check_update") {
