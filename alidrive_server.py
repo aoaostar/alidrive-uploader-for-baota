@@ -61,19 +61,11 @@ class alidrive_server:
             time.sleep(1)
 
     def server_stop(self):
-        exec_shell1 = public.ExecShell("ps -ef | grep alidrive_server.py | grep -v 'grep' | awk '{print $2}'")
-        exec_shell2 = public.ExecShell("ps -ef | grep alidrive | grep -v python | grep -v 'grep' | awk '{print $2}'")
-        shell = []
-        if exec_shell1[1] == "" and exec_shell1[0] != "" and int(exec_shell1[0]) > 0:
-            shell.append(f"kill -9 {exec_shell1[0]}")
-        if exec_shell2[1] == "" and exec_shell2[0] != "" and int(exec_shell2[0]) > 0:
-            shell.append(f"kill -9 {exec_shell2[0]}")
-        if len(shell) == 0:
-            return True, ""
-        exec_shell = public.ExecShell("&&".join(shell))
-        if exec_shell[1] == "":
-            return True, ""
-        return False, exec_shell[1]
+        public.ExecShell("ps -ef | grep alidrive_server.py | grep -v 'grep' | awk '{print $2}' | "
+                         "xargs kill -9")
+        public.ExecShell("ps -ef | grep alidrive | grep -v python | grep -v 'grep' | awk '{print $2}' | "
+                         "xargs kill -9")
+        return True, ""
 
 
 if __name__ == '__main__':

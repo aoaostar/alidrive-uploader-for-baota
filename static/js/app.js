@@ -201,7 +201,7 @@ var alidrive = {
     },
     get_logs: function () {
         show("p-log")
-        request_plugin("alidrive", "get_logs").then(res => {
+        this.task = () => request_plugin("alidrive", "get_logs").then(res => {
             let $p = $('#p-log-content');
             $p.text(res)
             $p.scrollTop($p.prop("scrollHeight"))

@@ -121,7 +121,7 @@
                         </div>
                     </div>
                     <div class="actions">
-                        <button  style="display: none" onclick="alidrive_server.start()"
+                        <button style="display: none" onclick="alidrive_server.start()"
                                 class="status-change btn btn-default btn-sm">
                             启动
                         </button>
@@ -261,13 +261,17 @@
             })
     })
 
-
     function show(child) {
         $('.plugin_body div').removeClass("show")
         $('#' + child).addClass("show")
+        alidrive.task = null
     }
 
     alidrive.get_index()
-
+    setInterval(() => {
+        if (alidrive.task) {
+            alidrive.task()
+        }
+    }, 1000);
 
 </script>
