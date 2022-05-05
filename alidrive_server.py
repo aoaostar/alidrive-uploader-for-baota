@@ -61,10 +61,8 @@ class alidrive_server:
             time.sleep(1)
 
     def server_stop(self):
-        public.ExecShell("ps -ef | grep alidrive_server.py | grep -v 'grep' | awk '{print $2}' | "
-                         "xargs kill -9")
-        public.ExecShell("ps -ef | grep alidrive | grep -v python | grep -v 'grep' | awk '{print $2}' | "
-                         "xargs kill -9")
+        public.ExecShell("ps -ef | grep alidrive_server.py | grep -v 'grep' | cut -c 9-15 | xargs kill -9")
+        public.ExecShell("ps -ef | grep alidrive | grep -v python | grep -v 'grep' | cut -c 9-15 | xargs kill -9")
         return True, ""
 
 

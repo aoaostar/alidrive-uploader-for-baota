@@ -222,11 +222,14 @@ var alidrive_server = {
             $('#p-index .status').hide()
             let status_change = $('#p-index .status-change');
             status_change.hide()
-            if (res.status) {
+            if (res.status || res.core_status) {
                 $(status_change[1]).show()
-                $('#p-index .plugin-status .status.ok').show()
             } else {
                 $(status_change[0]).show()
+            }
+            if (res.status) {
+                $('#p-index .plugin-status .status.ok').show()
+            } else {
                 $('#p-index .plugin-status .status.no').show()
             }
             if (res.core_status) {
