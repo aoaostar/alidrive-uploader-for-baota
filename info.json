@@ -2,7 +2,7 @@
   "title": "阿里云盘上传工具",
   "name": "alidrive",
   "ps": "阿里云盘上传工具",
-  "versions": "2.2.1",
+  "versions": "2.2.2",
   "checks": "/www/server/panel/plugin/alidrive",
   "author": "Pluto",
   "home": "https://www.aoaostar.com"

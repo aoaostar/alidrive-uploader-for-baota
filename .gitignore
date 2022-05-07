@@ -1,3 +1,4 @@
 .idea
 tasks.json
 core
+test*

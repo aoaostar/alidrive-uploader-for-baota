@@ -42,18 +42,20 @@ class alidrive_server:
 
         while True:
             if self.server_status():
-                if os.path.exists(self.__tasks_file):
-                    task_file = public.readFile(self.__tasks_file)
-                    tasks = json.loads(task_file)
-                else:
-                    tasks = {}
+
+                tasks = self.__load_task()
                 now = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
                 try:
-                    task = tasks.pop(list(tasks.keys())[0])
+                    id = list(tasks.keys())[0]
+                    task = tasks.pop(id)
                     command = f"chmod 755 {self.__core_file} && {self.__core_file} {task} /"
                     exec_shell = public.ExecShell(command)
                     log = f"[插件日志][{now}] {command}\n"
                     log += f"[插件日志][{now}] resp-length={len(exec_shell[0])},error={exec_shell[1]}\n"
+                    # 获取最新task后删除旧的
+                    tasks = self.__load_task()
+                    if id in tasks:
+                        tasks.pop(id)
                     public.writeFile(self.__tasks_file, json.dumps(tasks))
                     public.writeFile(self.__logs_file, log, "a")
                 except Exception as e:
@@ -64,6 +66,14 @@ class alidrive_server:
         public.ExecShell("ps -ef | grep alidrive_server.py | grep -v 'grep' | cut -c 9-15 | xargs kill -9")
         public.ExecShell("ps -ef | grep alidrive | grep -v python | grep -v 'grep' | cut -c 9-15 | xargs kill -9")
         return True, ""
+
+    def __load_task(self):
+        if os.path.exists(self.__tasks_file):
+            task_file = public.readFile(self.__tasks_file)
+            tasks = json.loads(task_file)
+        else:
+            tasks = {}
+        return tasks
 
 
 if __name__ == '__main__':
