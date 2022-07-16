@@ -71,7 +71,12 @@ class alidrive_main:
         if not os.path.exists(args.filepath):
             return public.returnMsg(False, "文件不存在")
         import uuid
-        self.__tasks[str(uuid.uuid1())] = args.filepath
+        import yaml
+        yaml_load = yaml.safe_load(self.__config)
+        self.__tasks[str(uuid.uuid1())] = {
+            "filename": args.filepath,
+            "root_path": yaml_load.get("ali_drive").get("root_path"),
+        }
         self.__save_tasks()
         return public.returnMsg(True, "添加成功")
 

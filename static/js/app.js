@@ -173,7 +173,10 @@ var alidrive = {
                                     <div class="titlename c3">${k}</div>
                                 </td>
                                 <td>
-                                    <div class="titlename c3">${res[k]}</div>
+                                    <div class="titlename c3">${res[k]["filename"]}</div>
+                                </td>
+                                <td>
+                                    <div class="titlename c3">${res[k]["root_path"]}</div>
                                 </td>
                             </tr>`
             }
