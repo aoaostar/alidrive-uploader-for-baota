@@ -299,7 +299,7 @@ function request_plugin(plugin_name, function_name, args, timeout) {
                 resolve(rdata)
             },
             error: function (e) {
-                alidrive_message.error("请求异常" + e)
+                alidrive_message.error("请求异常" + e.responseText)
                 reject(e)
             }
         })
@@ -319,7 +319,7 @@ function request_post(url, args, callback, timeout) {
                 resolve(rdata)
             },
             error: function (e) {
-                alidrive_message.error("请求异常" + e)
+                alidrive_message.error("请求异常" + e.responseText)
                 reject(e)
             }
         })

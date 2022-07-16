@@ -48,7 +48,7 @@ class alidrive_server:
                 try:
                     id = list(tasks.keys())[0]
                     task = tasks.pop(id)
-                    command = f"chmod 755 {self.__core_file} && {self.__core_file} {task} /"
+                    command = f"chmod 755 {self.__core_file} && {self.__core_file} \"{task}\" /"
                     exec_shell = public.ExecShell(command)
                     log = f"[插件日志][{now}] {command}\n"
                     log += f"[插件日志][{now}] resp-length={len(exec_shell[0])},error={exec_shell[1]}\n"
