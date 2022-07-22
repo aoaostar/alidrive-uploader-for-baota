@@ -49,7 +49,7 @@ var alidrive_view_files = {
             path: path,
         }).then(res => {
             //href='p=2'
-            $("#p-file-page").html(res.PAGE.replace(/href='p=(\d+)'/g, `onclick="view_files.get_dir($1,'${res.PATH}')"`))
+            $("#p-file-page").html(res.PAGE.replace(/href='p=(\d+)'/g, `onclick="alidrive_view_files.get_dir($1,'${res.PATH}')"`))
             let path_split = res.PATH.split('/');
             let tmp_path = `<li><a title="/" onclick="alidrive_view_files.get_dir(1,'/')">根目录</a></li>`
 
