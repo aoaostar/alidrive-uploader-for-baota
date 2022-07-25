@@ -59,7 +59,7 @@ class alidrive_main:
 
     def update(self, args):
         shell = public.ExecShell(
-            f"chmod 755 {self.__plugin_path}install.sh && bash {self.__plugin_path}install.sh update -y")
+            f"chmod 755 {self.__plugin_path}install.sh && bash {self.__plugin_path}install.sh update")
 
         if not shell[0] == "":
             return public.returnMsg(True, shell[0])
