@@ -24,8 +24,6 @@ wget -O install.sh https://raw.githubusercontent.com/aoaostar/alidrive-uploader-
 
 * 控制台快速获取代码
 ```javascript
-var data = JSON.parse(localStorage.getItem('token'));
-console.log(`refresh_token  =>  ${data.refresh_token}
-default_drive_id  =>  ${data.default_drive_id}
-`);
+var d = JSON.parse(localStorage.getItem('token'));
+console.log(`\tdrive_id: ${d.default_drive_id}\n\trefresh_token: ${d.refresh_token}`);
 ```
