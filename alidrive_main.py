@@ -6,10 +6,9 @@
 # | Author: Pluto <i@aoaostar.com>
 # +-------------------------------------------------------------------
 import sys, os, json
+from alidrive_server import alidrive_server
 
 # 设置运行目录
-import time
-
 os.chdir("/www/server/panel")
 
 # 添加包引用位置并引用公共包
@@ -110,14 +109,18 @@ class alidrive_main:
         return f_body
 
     def clear_logs(self, args):
-        public.writeFile(self.__logs_file, "")
+        dirname = os.path.dirname(self.__logs_file)
+        listdir = os.listdir(dirname)
+        for p in listdir:
+            path_join = os.path.join(dirname, p)
+            if os.path.isfile(path_join):
+                os.remove(path_join)
         return public.returnMsg(True, "清除成功")
 
     def exec_clean(self, args):
         command = f"chmod 755 \"{self.__core_file}\" && \"{self.__core_file}\" --clean"
-        from alidrive_server import alidrive_server
         server = alidrive_server()
-        server.log(command)
+        server.log(f"[清理缓存] {command}")
         exec_shell = public.ExecShell(command)
         if exec_shell[1] != "":
             server.log(f"[清理缓存] {exec_shell[1]}")
@@ -126,7 +129,6 @@ class alidrive_main:
         return public.returnMsg(True, "清除成功")
 
     def server_status(self, args):
-        from alidrive_server import alidrive_server
         server = alidrive_server()
         return {
             "status": server.server_status(),

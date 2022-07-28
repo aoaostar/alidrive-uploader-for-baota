@@ -15,6 +15,7 @@ os.chdir("/www/server/panel")
 sys.path.append("class/")
 import public
 import time
+import threading
 
 
 class alidrive_server:
@@ -40,8 +41,15 @@ class alidrive_server:
 
     def server_start(self):
 
+        if self.server_status():
+            return
+
+        # 启动定时任务
+        t = threading.Thread(target=self.__cron)
+        t.start()
+
         while True:
-            if self.server_status():
+            if not self.alidrive_status():
                 tasks = self.__load_task()
                 if len(tasks) > 0:
                     try:
@@ -49,8 +57,8 @@ class alidrive_server:
                         task = tasks.pop(id)
                         command = f"chmod 755 \"{self.__core_file}\" && \"{self.__core_file}\" --root_path=\"{task['root_path']}\" \"{task['filename']}\" /"
                         exec_shell = public.ExecShell(command)
-                        self.__log(command)
-                        self.__log(f"resp-length={len(exec_shell[0])},error={exec_shell[1]}")
+                        self.log(command)
+                        self.log(f"resp-length={len(exec_shell[0])},error={exec_shell[1]}")
                         # 获取最新task后删除旧的
                         tasks = self.__load_task()
                         if id in tasks:
@@ -71,6 +79,20 @@ class alidrive_server:
         now = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         log = f"[插件日志][{now}] {message}\n"
         public.writeFile(self.__logs_file, log, "a")
+
+    def __cron(self):
+        # 启动定时刷新refresh_token
+        while True:
+            if not self.alidrive_status():
+                self.__refresh_token()
+                time.sleep(3600)
+            else:
+                time.sleep(10)
+
+    def __refresh_token(self):
+        command = f"chmod 755 \"{self.__core_file}\" && \"{self.__core_file}\" --refresh"
+        self.log(f"[定时刷新token] {command}")
+        public.ExecShell(command)
 
     def __load_task(self):
         if os.path.exists(self.__tasks_file):

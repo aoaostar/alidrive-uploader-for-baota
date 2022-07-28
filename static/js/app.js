@@ -133,9 +133,9 @@ var alidrive = {
                         </tr>
                         <tr>
                             <th>作者</th>
-                            <td>Pluto</td>
+                            <td><a href="https://www.aoaostar.com" target="_blank">Pluto</a></td>
                             <th>Github</th>
-                            <td><a href="https://github.com/aoaostar" target="_blank">https://github.com/aoaostar</a></td>
+                            <td><a href="https://github.com/aoaostar/alidrive-uploader" target="_blank">https://github.com/aoaostar/alidrive-uploader</a></td>
                         </tr>`
             $('#p-index-content').html(tmp)
         }).finally(() => {
