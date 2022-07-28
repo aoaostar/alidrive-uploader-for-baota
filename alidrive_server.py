@@ -33,15 +33,14 @@ class alidrive_server:
             return True
         return False
 
-    def server_status(self):
+    def server_status(self, num=0):
         exec_shell = public.ExecShell("ps -ef | grep alidrive_server.py | grep -v grep | wc -l")
-        if exec_shell[1] == "" and int(exec_shell[0]) > 0:
+        if exec_shell[1] == "" and int(exec_shell[0]) > num:
             return True
         return False
 
     def server_start(self):
-
-        if self.server_status():
+        if self.server_status(1):
             return
 
         # 启动定时任务

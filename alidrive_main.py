@@ -109,12 +109,13 @@ class alidrive_main:
         return f_body
 
     def clear_logs(self, args):
-        dirname = os.path.dirname(self.__logs_file)
-        listdir = os.listdir(dirname)
-        for p in listdir:
-            path_join = os.path.join(dirname, p)
-            if os.path.isfile(path_join):
-                os.remove(path_join)
+        if os.path.isfile(self.__logs_file):
+            dirname = os.path.dirname(self.__logs_file)
+            listdir = os.listdir(dirname)
+            for p in listdir:
+                path_join = os.path.join(dirname, p)
+                if os.path.isfile(path_join):
+                    os.remove(path_join)
         return public.returnMsg(True, "清除成功")
 
     def exec_clean(self, args):
