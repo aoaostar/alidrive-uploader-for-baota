@@ -224,6 +224,12 @@ var alidrive = {
             this.get_logs()
         })
     },
+    exec_clean: function () {
+        request_plugin("alidrive", "exec_clean").then(res => {
+            layer.msg(res.msg, {icon: res.status ? 1 : 2});
+            this.get_logs()
+        })
+    },
 }
 
 var alidrive_server = {

@@ -57,7 +57,7 @@ class alidrive_server:
                             tasks.pop(id)
                         public.writeFile(self.__tasks_file, json.dumps(tasks))
                     except Exception as e:
-                        self.__log(e)
+                        self.log(e)
                         pass
 
             time.sleep(1)
@@ -67,7 +67,7 @@ class alidrive_server:
         public.ExecShell("ps -ef | grep alidrive | grep -v python | grep -v 'grep' | cut -c 9-15 | xargs kill -9")
         return True, ""
 
-    def __log(self, message):
+    def log(self, message):
         now = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         log = f"[插件日志][{now}] {message}\n"
         public.writeFile(self.__logs_file, log, "a")

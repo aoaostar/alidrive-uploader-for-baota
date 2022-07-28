@@ -90,7 +90,7 @@
             <p onclick="alidrive.get_config()">配置</p>
             <p onclick="alidrive.get_tasks()">任务列表</p>
             <p onclick="alidrive_view_files.index()">查看文件</p>
-            <p onclick="alidrive.get_logs()">日志</p>
+            <p onclick="alidrive.get_logs()">实时日志</p>
         </div>
         <!--内容部分-->
         <div class="bt-w-con pd15">
@@ -158,7 +158,11 @@
                 </div>
                 <div id="p-log">
                     <div contentEditable="true" class="output" id="p-log-content"></div>
-                    <button onclick="alidrive.clear_logs()" class="btn btn-success btn-sm" style="margin-top:10px;">清空日志
+                    <button onclick="alidrive.clear_logs()" class="btn btn-success btn-sm" style="margin-top:10px;">
+                        清空日志
+                    </button>
+                    <button onclick="alidrive.exec_clean()" class="btn btn-success btn-sm" style="margin-top:10px;">
+                        清空缓存
                     </button>
                 </div>
                 <div id="p-task">

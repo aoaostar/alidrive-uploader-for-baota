@@ -8,6 +8,7 @@
 import sys, os, json
 
 # 设置运行目录
+import time
 
 os.chdir("/www/server/panel")
 
@@ -110,6 +111,18 @@ class alidrive_main:
 
     def clear_logs(self, args):
         public.writeFile(self.__logs_file, "")
+        return public.returnMsg(True, "清除成功")
+
+    def exec_clean(self, args):
+        command = f"chmod 755 \"{self.__core_file}\" && \"{self.__core_file}\" --clean"
+        from alidrive_server import alidrive_server
+        server = alidrive_server()
+        server.log(command)
+        exec_shell = public.ExecShell(command)
+        if exec_shell[1] != "":
+            server.log(f"[清理缓存] {exec_shell[1]}")
+            return public.returnMsg(False, f"清除失败, {exec_shell[1]}")
+        server.log(f"[清理缓存] {exec_shell[0]}")
         return public.returnMsg(True, "清除成功")
 
     def server_status(self, args):
