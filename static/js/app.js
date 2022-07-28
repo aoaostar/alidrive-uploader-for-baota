@@ -100,6 +100,7 @@ var alidrive_view_files = {
     }
 }
 var alidrive = {
+    task: null,
     update: function () {
         const loading = alidrive_message.loading('正在更新中');
         request_plugin("alidrive", 'update', {}, 0).then(res => {
@@ -204,10 +205,17 @@ var alidrive = {
     },
     get_logs: function () {
         show("p-log")
-        this.task = () => request_plugin("alidrive", "get_logs").then(res => {
+        const task = () => request_plugin("alidrive", "get_logs").then(res => {
             let $p = $('#p-log-content');
             $p.text(res)
             $p.scrollTop($p.prop("scrollHeight"))
+        })
+        this.task = task
+        $('#p-log-content').on('mouseenter', () => {
+            this.task = null
+        })
+        $('#p-log-content').on('mouseleave', () => {
+            this.task = task
         })
     },
     clear_logs: function () {
