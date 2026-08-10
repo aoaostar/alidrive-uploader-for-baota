@@ -8,6 +8,7 @@
 import json
 import os
 import sys
+import shlex
 
 os.chdir("/www/server/panel")
 
@@ -54,7 +55,7 @@ class alidrive_server:
                     try:
                         id = list(tasks.keys())[0]
                         task = tasks.pop(id)
-                        command = f"chmod 755 \"{self.__core_file}\" && \"{self.__core_file}\" --root_path=\"{task['root_path']}\" \"{task['filename']}\" /"
+                        command = f"chmod 755 {shlex.quote(self.__core_file)} && {shlex.quote(self.__core_file)} --root_path={shlex.quote(task['root_path'])} {shlex.quote(task['filename'])} /"
                         exec_shell = public.ExecShell(command)
                         self.log(command)
                         self.log(f"resp-length={len(exec_shell[0])},error={exec_shell[1]}")
